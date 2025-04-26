@@ -21,7 +21,7 @@ from metrics.answer_support_recall import AnswerSupportRecallMetric
 from metrics.squad_answer_em_f1 import SquadAnswerEmF1Metric
 
 # Set your path accordingly
-base_pred_path = './predictions/classifier/t5-large/flan_t5_xl/epoch/35/2025_04_25/13_42_07/'
+base_pred_path = './predictions/classifier/bert-tiny/flan_t5_xl/epoch/20/2025_04_25/'
 
 def normalize_answer(s):
     """Lower text and remove punctuation, articles and extra whitespace."""
@@ -101,6 +101,9 @@ def evaluate_by_dicts(data_name):
 
     for id_ in set(id_to_ground_truths.keys()):
         ground_truth = id_to_ground_truths[id_]
+        if (id_ not in id_to_predictions):
+            # print(id_)
+            continue
         prediction = id_to_predictions[id_]
 
         assert isinstance(prediction, (str, list))
