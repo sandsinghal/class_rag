@@ -1,0 +1,1 @@
+MODEL_NAME=flan-t5-xl uvicorn serve:app --port 8010 --app-dir llm_server

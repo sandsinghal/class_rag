@@ -2,9 +2,9 @@ DATE=$(date +%Y_%m_%d)/$(date +%H_%M_%S)
 MODEL=t5-large
 LLM_NAME=flan_t5_xl
 DATASET_NAME=musique_hotpot_wiki2_nq_tqa_sqd
-GPU=7
+GPU=0
 
-for EPOCH in 15 20 25 30 35
+for EPOCH in 35
 do
     # train
     TRAIN_OUTPUT_DIR=./outputs/${DATASET_NAME}/model/${MODEL}/${LLM_NAME}/epoch/${EPOCH}/${DATE}

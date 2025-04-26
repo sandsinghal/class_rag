@@ -1,0 +1,1 @@
+uvicorn serve:app --port 8000 --app-dir retriever_server
