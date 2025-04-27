@@ -21,7 +21,7 @@ from metrics.answer_support_recall import AnswerSupportRecallMetric
 from metrics.squad_answer_em_f1 import SquadAnswerEmF1Metric
 
 # Set your path accordingly
-base_pred_path = './predictions/classifier/bert-tiny/flan_t5_xl/epoch/20/2025_04_25/'
+base_pred_path = './predictions/classifier/tiny_bert/flan_t5_xl/epoch/20/2025_04_26/19_17_31/'
 
 def normalize_answer(s):
     """Lower text and remove punctuation, articles and extra whitespace."""

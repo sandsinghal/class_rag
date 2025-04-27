@@ -9,7 +9,7 @@ parser.add_argument("model_name", type=str, help="model name.", choices=("flan_t
 args = parser.parse_args()
 
 # your file path to /path_to_classifier/predict/dict_id_pred_results.json
-classification_result_file = './classifier/outputs/musique_hotpot_wiki2_nq_tqa_sqd/model/bert-tiny/flan_t5_xl/epoch/20/2025_04_25/19_20_55/dict_id_pred_results.json'
+classification_result_file = './classifier/outputs/musique_hotpot_wiki2_nq_tqa_sqd/model/tiny_bert/flan_t5_xl/epoch/20/2025_04_26/19_17_31/predict/dict_id_pred_results.json'
 
 stepNum_result_file = os.path.join("predictions", "test", f'ircot_qa_{args.model_name}', 'total', 'stepNum.json')
 output_path = os.path.join("predictions", 'classifier', '/'.join(classification_result_file.split('/')[classification_result_file.split('/').index('model')+1:-2]))
