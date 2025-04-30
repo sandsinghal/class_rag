@@ -21,7 +21,7 @@ from metrics.answer_support_recall import AnswerSupportRecallMetric
 from metrics.squad_answer_em_f1 import SquadAnswerEmF1Metric
 
 # Set your path accordingly
-base_pred_path = './predictions/classifier/tiny_bert/flan_t5_xl/epoch/20/2025_04_26/19_17_31/'
+base_pred_path = './predictions/classifier/e5_small_v2/flan_t5_xl/epoch/5/2025_04_27/16_33_24/'
 
 def normalize_answer(s):
     """Lower text and remove punctuation, articles and extra whitespace."""
@@ -80,6 +80,11 @@ def load_predictions(prediction_file_path):
         id_to_predictions = json.load(file)
     return id_to_predictions
 
+def load_options(options_file_path):
+    with open(options_file_path, "r") as file:
+        options = json.load(file)
+    return options
+
 # Save
 def save_results(results_dict, output_path):
     output_path = output_path
@@ -97,7 +102,10 @@ def evaluate_by_dicts(data_name):
     metrics = [SquadAnswerEmF1Metric()]
     id_to_predictions = load_predictions(base_pred_path + data_name+'/' + data_name+'.json')
     id_to_ground_truths = load_ground_truths('processed_data/'+data_name+'/test_subsampled.jsonl')
+    options = load_options(base_pred_path + data_name+'/' + data_name+'_option.json')
     total_acc = 0
+
+    steps = 0
 
     for id_ in set(id_to_ground_truths.keys()):
         ground_truth = id_to_ground_truths[id_]
@@ -105,6 +113,8 @@ def evaluate_by_dicts(data_name):
             # print(id_)
             continue
         prediction = id_to_predictions[id_]
+
+        steps += options[id_]['stepNum']
 
         assert isinstance(prediction, (str, list))
         if isinstance(prediction, str):
@@ -122,16 +132,21 @@ def evaluate_by_dicts(data_name):
         metrics[0](prediction, ground_truth)
         
     total_acc = total_acc / len(id_to_predictions)
+    steps = steps / len(options)
     evaluation_results = metrics[0].get_metric()
-    evaluation_results['acc'] = total_acc        
+    evaluation_results['acc'] = total_acc
+    evaluation_results['steps'] = steps        
 
     save_results(evaluation_results, base_pred_path + data_name+'/' +'eval_metic_result_acc.json')
 
 def official_evaluate_by_dicts(data_name):
     id_to_predictions = load_predictions(base_pred_path + data_name+'/' + data_name+'.json')
     id_to_ground_truths = load_ground_truths('processed_data/'+data_name+'/test_subsampled.jsonl')
+    options = load_options(base_pred_path + data_name+'/' + data_name+'_option.json')
 
     question_ids = list(id_to_predictions.keys())
+
+    steps = 0
 
     for id_, prediction in id_to_predictions.items():
         if isinstance(prediction, list) and len(prediction) == 1:
@@ -139,7 +154,7 @@ def official_evaluate_by_dicts(data_name):
         elif isinstance(prediction, list) and len(prediction) > 1:
             id_to_predictions[id_] = " ".join([str(e) for e in prediction])
             print("WARNING: Found a list answer prediction, concatenating it.")
-
+        steps += options[id_]['stepNum']
     os.makedirs(".temp", exist_ok=True)
 
     if data_name == "hotpotqa":
@@ -196,6 +211,7 @@ def official_evaluate_by_dicts(data_name):
                 "recall": round(metrics_["recall"], 5),
                 "count": len(id_to_predictions),
                 'acc' : round(metrics_["acc"], 5),
+                'steps': steps / len(options)
             }
 
         os.remove(temp_ground_truth_file_path)
@@ -258,6 +274,7 @@ def official_evaluate_by_dicts(data_name):
                 "recall": round(metrics_["recall"] / 100, 5),
                 "count": len(id_to_predictions),
                 'acc' : round(metrics_["acc"] / 100, 5),
+                'steps': steps / len(options)
             }
 
         os.remove(temp_ground_truth_file_path)
@@ -324,6 +341,7 @@ def official_evaluate_by_dicts(data_name):
                 "em": round(metrics_["answer_em"], 3) if "answer_em" in metrics_ else None,
                 "count": len(id_to_predictions),
                 "acc": round(metrics_["answer_acc"], 3),
+                'steps': steps / len(options)
             }
 
         os.remove(temp_ground_truth_file_path)

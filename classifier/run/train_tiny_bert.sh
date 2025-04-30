@@ -1,14 +1,15 @@
 #!/bin/bash
 
 DATE=$(date +%Y_%m_%d)/$(date +%H_%M_%S)
-MODEL=prajjwal1/bert-tiny
+MODEL=intfloat/e5-small-v2
+MODEL_NAME=e5_small_v2
 LLM_NAME=flan_t5_xl   # You can keep this or rename if you like
 DATASET_NAME=musique_hotpot_wiki2_nq_tqa_sqd
 GPU=0
 
-for EPOCH in 20
+for EPOCH in 5
 do
-    TRAIN_OUTPUT_DIR=./outputs/${DATASET_NAME}/model/tiny_bert/${LLM_NAME}/epoch/${EPOCH}/${DATE}/train
+    TRAIN_OUTPUT_DIR=./outputs/${DATASET_NAME}/model/${MODEL_NAME}/${LLM_NAME}/epoch/${EPOCH}/${DATE}/train
     mkdir -p ${TRAIN_OUTPUT_DIR}
 
     CUDA_VISIBLE_DEVICES=${GPU} python run_classifier_encoder.py \
@@ -20,7 +21,7 @@ do
         --batch_size 32 \
         --learning_rate 2e-5
 
-    VALID_OUTPUT_DIR=./outputs/${DATASET_NAME}/model/tiny_bert/${LLM_NAME}/epoch/${EPOCH}/${DATE}/valid
+    VALID_OUTPUT_DIR=./outputs/${DATASET_NAME}/model/${MODEL_NAME}/${LLM_NAME}/epoch/${EPOCH}/${DATE}/valid
     mkdir -p ${VALID_OUTPUT_DIR}
 
     CUDA_VISIBLE_DEVICES=${GPU} python run_classifier_encoder.py \
@@ -30,7 +31,7 @@ do
         --do_eval \
         --batch_size 100
 
-    PREDICT_OUTPUT_DIR=./outputs/${DATASET_NAME}/model/tiny_bert/${LLM_NAME}/epoch/${EPOCH}/${DATE}/predict
+    PREDICT_OUTPUT_DIR=./outputs/${DATASET_NAME}/model/${MODEL_NAME}/${LLM_NAME}/epoch/${EPOCH}/${DATE}/predict
     mkdir -p ${PREDICT_OUTPUT_DIR}
 
     CUDA_VISIBLE_DEVICES=${GPU} python run_classifier_encoder.py \
